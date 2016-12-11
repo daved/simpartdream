@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image/color"
 	"io"
+	"log"
 	"os"
 
 	"github.com/daved/simpartsim"
@@ -51,6 +52,23 @@ func main() {
 		os.Exit(1)
 	}
 
+	log.Printf("Listening...\n")
+	addr, _, err := etherdream.FindFirstDAC()
+	if err != nil {
+		log.Fatalf("Network error: %v", err)
+	}
+
+	log.Printf("Found DAC at %v\n", addr)
+
+	dac, err := etherdream.NewDAC(addr.IP.String())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dac.Close()
+
+	debug := false
+	dac.Play(stream, debug)
+
 	_ = stream
 }
 
@@ -84,7 +102,7 @@ func dumpInPointStream(w io.Writer, cs []simpartsim.Coords) {
 		x, y := int(cs[k].X), int(cs[k].Y)
 		c := color.RGBA{0xff, 0x00, 0x00, 0xff}
 
-		_, _ = w.Write(etherdream.NewPoint(x, y, c).Encode())
+		_, _ = w.Write(etherdream.NewPoint(x*100, y*100, c).Encode())
 	}
 }
 
@@ -96,6 +114,9 @@ func pointStream(csc <-chan []simpartsim.Coords) (etherdream.PointStream, error)
 
 		for cs := range csc {
 			dumpInPointStream(w, cs)
+		}
+		for {
+
 		}
 	}
 

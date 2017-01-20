@@ -25,9 +25,9 @@ func dumpToStdout(w io.Writer, cs []simpartsim.Coords) error {
 func dumpInPointStream(w io.Writer, cs []simpartsim.Coords) error {
 	for k := range cs {
 		x, y := int(cs[k].X), int(cs[k].Y)
-		c := color.RGBA{0xff, 0x00, 0x00, 0xff}
+		c := color.RGBA{0xff, 0xff, 0x00, 0xff}
 
-		if _, err := w.Write(etherdream.NewPoint(x, y, c).Encode()); err != nil {
+		if _, err := w.Write(etherdream.NewPoint(x*100, y*100, c).Encode()); err != nil {
 			return err
 		}
 	}

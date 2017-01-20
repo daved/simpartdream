@@ -43,11 +43,13 @@ func (s *space) pointStream(ps simpartsim.Particles, frames int) etherdream.Poin
 			_ = w.Close()
 		}()
 
-		csc := s.run(ps, frames)
+		for {
+			csc := s.run(ps, frames)
 
-		for cs := range csc {
-			if err := dumpInPointStream(w, cs); err != nil {
-				return
+			for cs := range csc {
+				if err := dumpInPointStream(w, cs); err != nil {
+					return
+				}
 			}
 		}
 	}

@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/daved/simpartsim"
+	"github.com/tgreiser/etherdream"
 )
 
 func main() {
@@ -14,7 +16,7 @@ func main() {
 	frames := 200
 	opts := simpartsim.SimpleSpaceOptions{
 		FrameLen: .1,
-		Size:     100.0,
+		Size:     1000.0,
 		Gravity:  9.81,
 		Drag:     9.0,
 	}
@@ -35,5 +37,19 @@ func main() {
 	}
 
 	stream := spc.pointStream(ps, frames)
-	_ = stream // remove when var is used
+
+	//addr, _, err := etherdream.FindFirstDAC()
+	//if err != nil {
+	//	log.Fatalf("Network error: %v", err)
+	//}
+	//log.Printf("Found DAC at %v\n", addr)
+
+	dac, err := etherdream.NewDAC("127.0.0.1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dac.Close()
+
+	debug := false
+	dac.Play(stream, debug)
 }
